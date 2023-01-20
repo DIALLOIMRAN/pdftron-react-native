@@ -699,6 +699,45 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView2 {
         mBuilder = mBuilder.imageInReflowEnabled(imageInReflowEnabled);
     }
 
+    public void setCustomAnnotation(Annot annot, PDFDoc doc, int imageRes) throws PDFNetException {
+        Context context = getContext();
+        // Initialize a new ElementWriter and ElementBuilder
+        ElementWriter writer = new ElementWriter();
+        ElementBuilder builder = new ElementBuilder();
+    
+        writer.begin(doc.getSDFDoc(), true);
+    
+        File imageFile = Utils.copyResourceToLocal(context, imageRes, "image", ".png");
+    
+        // Initialize the new image
+        Image image = Image.create(doc.getSDFDoc(), imageFile.getAbsolutePath());
+        int w = image.getImageWidth();
+        int h = image.getImageHeight();
+    
+        // Initialize a new image element
+        Element element = builder.createImage(image, 0, 0, w, h);
+    
+        // Write the element
+        writer.writePlacedElement(element);
+    
+        // Get the bounding box of the new element
+        Rect bbox = element.getBBox();
+    
+        // Configure the appearance stream that will be written to the annotation
+        Obj new_appearance_stream = writer.end();
+    
+        // Set the bounding box to be the rect of the new element
+        new_appearance_stream.putRect(
+            "BBox",
+            bbox.getX1(),
+            bbox.getY1(),
+            bbox.getX2(),
+            bbox.getY2());
+    
+        // Overwrite the annotation's appearance with the new appearance stream
+        annot.setAppearance(new_appearance_stream);
+    }
+
     public void setReflowOrientation(String reflowOrientation) {
         int orientation = ReflowControl.HORIZONTAL;
         if (KEY_REFLOW_ORIENTATION_VERTICAL.equals(reflowOrientation)) {

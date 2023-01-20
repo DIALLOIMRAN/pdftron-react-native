@@ -201,6 +201,11 @@ public class DocumentViewViewManager extends ViewGroupManager<DocumentView> {
         documentView.setContinuousAnnotationEditing(contEditing);
     }
 
+    @ReactProp(name = "customAnnotation")
+    public void setCustomAnnotation(DocumentView documentView, Annot annot, PDFDoc doc, int imageRes) {
+        documentView.setCustomAnnotation(annot, doc, imageRes);
+    }
+
     @ReactProp(name = "annotationAuthor")
     public void setAnnotationAuthor(DocumentView documentView, String author) {
         documentView.setAnnotationAuthor(author);
